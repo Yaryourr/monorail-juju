@@ -16,10 +16,7 @@ const CARDS = {
     'watergas': { id: 'watergas', name: 'Water Gas', type: 'agent', isOxidizer: false, image: 'watergas.png' }
 };
 
-// الوضع الافتراضي للفلتر: يعرض كروت الحديد فقط عند تشغيل اللعبة لأول مرة
 let currentAgentFilter = 'none'; 
-
-// مصفوفة كروت اللاعب المتاحة
 let playerHand = ['fe', 'feo', 'fe3o4', 'fe2o3', 'o2', 'h2o', 's', 'h2', 'co', 'watergas'];
 
 // --- 2. ربط عناصر واجهة المستخدم ---
@@ -34,7 +31,10 @@ const btnResetHand = document.getElementById('btn-reset-inventory');
 const btnToggleOxidizers = document.getElementById('btn-toggle-oxidizers');
 const btnToggleReducers = document.getElementById('btn-toggle-reducers');
 
-// --- 3. محرك عرض الكروت النظيف (تم حذف النصوص المتداخلة كلياً) ---
+// المتغيرات الخاصة بالتحكم في أحداث اللمس للموبايل
+let touchDraggedElement = null;
+
+// --- 3. محرك عرض الكروت النظيف ---
 function renderHand() {
     deckContainer.innerHTML = '';
     
@@ -42,19 +42,16 @@ function renderHand() {
         const cardData = CARDS[cardId];
         if (!cardData) return;
 
-        // منطق الفصل: إذا كان كارت عامل مساعد، لا يظهر إلا عند تفعيل الفلتر المطابق بالضغط
         if (cardData.type === 'agent') {
             if (currentAgentFilter === 'none') return;
             if (currentAgentFilter === 'oxidizer' && !cardData.isOxidizer) return;
             if (currentAgentFilter === 'reducer' && cardData.isOxidizer) return;
         } else {
-            // إذا كان كارت حديد (شخصية)، نخفيه لو كان اللاعب يتصفح العوامل حالياً ليبقى المخزن نظيفاً
             if (currentAgentFilter !== 'none') return;
         }
 
         const cardElement = document.createElement('div');
         
-        // إدخال تأثير كروت سبايدرمان المتوهجة والاهتزاز الحركي عند الاختيار (Motion Effect)
         let baseStyles = 'w-20 aspect-[3/4] bg-slate-900 border-2 rounded-lg ';
         let motionStyles = 'overflow-hidden cursor-grab shadow transition-all duration-200 relative group ';
         let hoverEffects = 'hover:scale-110 hover:rotate-2 hover:shadow-lg hover:shadow-red-500/30 active:scale-95';
@@ -71,36 +68,33 @@ function renderHand() {
         cardElement.dataset.cardId = cardId;
         cardElement.dataset.handIndex = index;
 
-        // عرض الصورة الصافية المرفوعة فقط بدون دمج أي نصوص برمجية مشوهة للتصميم
         cardElement.innerHTML = '<img src="' + cardData.image + '" class="w-full h-full object-cover pointer-events-none">';
 
+        // ربط الكمبيوتر
         cardElement.addEventListener('dragstart', handleDragStart);
         cardElement.addEventListener('dragend', handleDragEnd);
+
+        // ربط شاشات التاتش والموبايل
+        cardElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+        cardElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+        cardElement.addEventListener('touchend', handleTouchEnd, { passive: false });
 
         deckContainer.appendChild(cardElement);
     });
 }
 
-// --- 4. فلاتر التصفية الجانبية: تظهر وتختفي العوامل عند الضغط فقط ---
+// --- 4. فلاتر التصفية الجانبية للأزرار ---
 btnToggleOxidizers.addEventListener('click', () => {
-    if (currentAgentFilter === 'oxidizer') {
-        currentAgentFilter = 'none'; // يعود لعرض كروت الشخصيات
-    } else {
-        currentAgentFilter = 'oxidizer'; // يظهر الـ 3 كروت المؤكسدة فقط
-    }
+    currentAgentFilter = (currentAgentFilter === 'oxidizer') ? 'none' : 'oxidizer';
     renderHand();
 });
 
 btnToggleReducers.addEventListener('click', () => {
-    if (currentAgentFilter === 'reducer') {
-        currentAgentFilter = 'none';
-    } else {
-        currentAgentFilter = 'reducer'; // يظهر الكروت المختزلة فقط
-    }
+    currentAgentFilter = (currentAgentFilter === 'reducer') ? 'none' : 'reducer';
     renderHand();
 });
 
-// --- 5. منطق السحب والإفلات وتأثيرات الحركة الموضعية ---
+// --- 5. منطق السحب والإفلات (الماوس والكمبيوتر) ---
 let draggedCardElement = null;
 
 function handleDragStart(e) {
@@ -128,32 +122,118 @@ function handleDragEnd() {
     slot.addEventListener('drop', (e) => {
         e.preventDefault();
         slot.classList.remove('slot-active');
-
         const cardId = e.dataTransfer.getData('text/plain');
         const sourceIndex = parseInt(e.dataTransfer.getData('source-index'));
-        const cardData = CARDS[cardId];
-
-        if (!cardData || slot.dataset.slotType !== cardData.type) return;
-
-        const existingCardId = slot.dataset.currentCardId;
-        if (existingCardId) playerHand.push(existingCardId);
-
-        slot.dataset.currentCardId = cardId;
-        
-        // عرض الصورة الصافية داخل المفاعل وحذف زر الإغلاق والكلمات المتراكبة
-      
-                // تعديل كود الحقن لإلغاء الهوامش تماماً وجعل الصورة تمتد لتملأ الخانة بالكامل
-                let targetImg = '<img src="' + cardData.image + '" class="reactor-slot-img">';
-                let removeBtn = '<button class="absolute-remove-btn" onclick="removeCardFromSlot(\'' + slot.id + '\')">×</button>';
-                
-                slot.innerHTML = '<div class="reactor-slot-wrapper">' + targetImg + removeBtn + '</div>';
-        
-     
-
-        playerHand.splice(sourceIndex, 1);
-        renderHand();
+        executeCardDrop(slot, cardId, sourceIndex);
     });
 });
+
+// --- 📱 منطق اللمس والتاتش الجديد المعزز بالمساحات الهندسية الجغرافية ---
+function handleTouchStart(e) {
+    e.preventDefault();
+    touchDraggedElement = this;
+    this.classList.add('card-dragging');
+    
+    this.style.position = 'fixed';
+    this.style.zIndex = '1000';
+    updateTouchPosition(this, e.touches[0]);
+}
+
+function handleTouchMove(e) {
+    if (!touchDraggedElement) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    updateTouchPosition(touchDraggedElement, touch);
+    
+    // التحقق الهندسي الفوري من مرور الإصبع فوق الصناديق لتفعيل الإضاءة النيون
+    checkTouchBoundary(touch.clientX, touch.clientY);
+}
+
+function handleTouchEnd(e) {
+    if (!touchDraggedElement) return;
+    e.preventDefault();
+    
+    touchDraggedElement.classList.remove('card-dragging');
+    const touch = e.changedTouches[0];
+    
+    const cardId = touchDraggedElement.dataset.cardId;
+    const sourceIndex = parseInt(touchDraggedElement.dataset.handIndex);
+    const cardData = CARDS[cardId];
+    
+    // حساب المربع الهندسي الدقيق لكل خانة إسقاط بالبكسل لحل ثغرة الحجب
+    const ironRect = ironSlot.getBoundingClientRect();
+    const agentRect = agentSlot.getBoundingClientRect();
+    
+    let droppedInSlot = null;
+    
+    // هل إحداثيات إصبع الطالب تقع داخل حدود خانة مركب الحديد؟
+    if (touch.clientX >= ironRect.left && touch.clientX <= ironRect.right &&
+        touch.clientY >= ironRect.top && touch.clientY <= ironRect.bottom) {
+        if (cardData.type === 'iron') droppedInSlot = ironSlot;
+    }
+    
+    // هل إحداثيات إصبع الطالب تقع داخل حدود خانة العامل المساعد؟
+    if (touch.clientX >= agentRect.left && touch.clientX <= agentRect.right &&
+        touch.clientY >= agentRect.top && touch.clientY <= agentRect.bottom) {
+        if (cardData.type === 'agent') droppedInSlot = agentSlot;
+    }
+    
+    // تنظيف تأثيرات الإضاءة
+    document.querySelectorAll('[data-slot-type]').forEach(s => s.classList.remove('slot-active'));
+    
+    if (droppedInSlot) {
+        executeCardDrop(droppedInSlot, cardId, sourceIndex);
+    } else {
+        // إعادة الكارت فوراً لليد السفلية بشكل منظم لو أفلت بره
+        touchDraggedElement.style.position = '';
+        touchDraggedElement.style.zIndex = '';
+        touchDraggedElement.style.left = '';
+        touchDraggedElement.style.top = '';
+        renderHand();
+    }
+    
+    touchDraggedElement = null;
+}
+
+function updateTouchPosition(element, touch) {
+    element.style.left = (touch.clientX - 40) + 'px';
+    element.style.top = (touch.clientY - 53) + 'px';
+}
+
+function checkTouchBoundary(clientX, clientY) {
+    const ironRect = ironSlot.getBoundingClientRect();
+    const agentRect = agentSlot.getBoundingClientRect();
+    const activeType = CARDS[touchDraggedElement?.dataset.cardId]?.type;
+    
+    document.querySelectorAll('[data-slot-type]').forEach(s => s.classList.remove('slot-active'));
+    
+    if (activeType === 'iron' && clientX >= ironRect.left && clientX <= ironRect.right &&
+        clientY >= ironRect.top && clientY <= ironRect.bottom) {
+        ironSlot.classList.add('slot-active');
+    }
+    
+    if (activeType === 'agent' && clientX >= agentRect.left && clientX <= agentRect.right &&
+        clientY >= agentRect.top && clientY <= agentRect.bottom) {
+        agentSlot.classList.add('slot-active');
+    }
+}
+
+function executeCardDrop(slot, cardId, sourceIndex) {
+    const cardData = CARDS[cardId];
+    const existingCardId = slot.dataset.currentCardId;
+    
+    if (existingCardId) playerHand.push(existingCardId);
+
+    slot.dataset.currentCardId = cardId;
+    
+    let targetImg = '<img src="' + cardData.image + '" class="reactor-slot-img">';
+    let removeBtn = '<button class="absolute-remove-btn" onclick="removeCardFromSlot(\'' + slot.id + '\')">×</button>';
+    
+    slot.innerHTML = '<div class="reactor-slot-wrapper">' + targetImg + removeBtn + '</div>';
+
+    playerHand.splice(sourceIndex, 1);
+    renderHand();
+}
 
 window.removeCardFromSlot = function(slotId) {
     const slot = document.getElementById(slotId);
@@ -164,102 +244,104 @@ window.removeCardFromSlot = function(slotId) {
         let baseText = slot.dataset.slotType === 'iron' ? 'Station Card' : 'Agent';
         slot.innerHTML = '<span class="slot-placeholder">Drop ' + baseText + '</span>';
         renderHand();
-    }
-};
-
-// --- 6. مصفوفة التحقق من معادلات دمج كيمياء الحديد المنبثقة من المنهج ---
-function calculateReactionOutput(ironId, agentId, temp) {
-    const agent = CARDS[agentId];
-    if (agent.isOxidizer) {
-        if (ironId === 'fe' && (agentId === 'o2' || agentId === 'h2o')) return 'fe3o4';
-        if (ironId === 'fe' && agentId === 's') return 'fe3o4'; 
-        if (ironId === 'feo' && agentId === 'o2') return 'fe2o3';
-        if (ironId === 'fe3o4' && agentId === 'o2') return 'fe2o3';
-    } else {
-        if (ironId === 'fe2o3') {
-            if (temp >= 230 && temp <= 300) return 'fe3o4';
-            if (temp >= 400 && temp <= 700) return 'feo';
-            if (temp > 700) return 'fe'; 
         }
-        if (ironId === 'fe3o4') {
-            if (temp > 700) return 'fe';
-            if (temp >= 400 && temp <= 700) return 'feo';
+    };
+    
+    // --- 6. مصفوفة الكيمياء التفاعلية الحاضنة للمعادلات المختبرة علمياً ---
+    function calculateReactionOutput(ironId, agentId, temp) {
+        const agent = CARDS[agentId];
+        if (agent.isOxidizer) {
+            if (ironId === 'fe' && (agentId === 'o2' || agentId === 'h2o')) return 'fe3o4';
+            if (ironId === 'fe' && agentId === 's') return 'fe3o4';
+            if (ironId === 'feo' && agentId === 'o2') return 'fe2o3';
+            if (ironId === 'fe3o4' && agentId === 'o2') return 'fe2o3';
+        } else {
+            if (ironId === 'fe2o3') {
+                if (temp >= 230 && temp <= 300) return 'fe3o4';
+                if (temp >= 400 && temp <= 700) return 'feo';
+                if (temp > 700) return 'fe';
+            }
+            if (ironId === 'fe3o4') {
+                if (temp > 700) return 'fe';
+                if (temp >= 400 && temp <= 700) return 'feo';
+            }
+            if (ironId === 'feo' && temp > 700) return 'fe';
         }
-        if (ironId === 'feo' && temp > 700) return 'fe';
+        return null;
     }
-    return null;
-}
-
-
-   // --- 7. أزرار التحكم بالتفاعلات والنافذة المنبثقة (Pop-up Controller) ---
-const reactionPopup = document.getElementById('reaction-popup');
-const popupTitle = document.getElementById('popup-title');
-const popupCardFrame = document.getElementById('popup-card-frame');
-const popupMessage = document.getElementById('popup-message');
-const btnPopupClose = document.getElementById('btn-popup-close');
-
-btnCombine.addEventListener('click', () => {
-    const ironId = ironSlot.dataset.currentCardId;
-    const agentId = agentSlot.dataset.currentCardId;
-    const currentTemp = parseInt(tempRange.value);
-
-    if (!ironId || !agentId) return;
-
-    const resultCardId = calculateReactionOutput(ironId, agentId, currentTemp);
-
-    if (resultCardId) {
-        const producedCard = CARDS[resultCardId];
-        playerHand.push(resultCardId);
-        
-        delete ironSlot.dataset.currentCardId;
-        delete agentSlot.dataset.currentCardId;
-        
-        ironSlot.innerHTML = '<span class="slot-placeholder">Drop Station Card</span>';
-        agentSlot.innerHTML = '<span class="slot-placeholder">Drop Agent Card</span>';
-        
-        // 🌟 إظهار النافذة المنبثقة في حالة النجاح وعرض صورة البطل ممتدة بالكامل
-        popupTitle.innerText = "SUCCESSFUL REACTION!";
-        popupTitle.className = "success-title";
-        popupCardFrame.innerHTML = '<img src="' + producedCard.image + '">';
-        popupMessage.innerText = "Formula computed successfully! " + producedCard.name + " card unlocked and added to storage deck.";
-        
+    
+    // --- 7. أزرار التحكم بالدمج ومراقب الشاشات المنبثقة للنتائج ---
+    const reactionPopup = document.getElementById('reaction-popup');
+    const popupTitle = document.getElementById('popup-title');
+    const popupCardFrame = document.getElementById('popup-card-frame');
+    const popupMessage = document.getElementById('popup-message');
+    const btnPopupClose = document.getElementById('btn-popup-close');
+    
+    btnCombine.addEventListener('click', () => {
+        const ironId = ironSlot.dataset.currentCardId;
+        const agentId = agentSlot.dataset.currentCardId;
+        const currentTemp = parseInt(tempRange.value);
+    
+        if (!ironId || !agentId) return;
+    
+        const resultCardId = calculateReactionOutput(ironId, agentId, currentTemp);
+    
+        if (resultCardId) {
+            const producedCard = CARDS[resultCardId];
+            playerHand.push(resultCardId);
+            
+            delete ironSlot.dataset.currentCardId;
+            delete agentSlot.dataset.currentCardId;
+            
+            ironSlot.innerHTML = '<span class="slot-placeholder">Drop Station Card</span>';
+            agentSlot.innerHTML = '<span class="slot-placeholder">Drop Agent Card</span>';
+            
+            popupTitle.innerText = "SUCCESSFUL REACTION!";
+            popupTitle.className = "success-title";
+            popupCardFrame.innerHTML = '<img src="' + producedCard.image + '">';
+            
+            let successMsg = "Formula computed successfully! " + producedCard.name;
+            successMsg += " card unlocked and added to storage deck.";
+            popupMessage.innerText = successMsg;
+            
+            currentAgentFilter = 'none';
+            renderHand();
+            
+            reactionPopup.classList.remove('popup-hidden');
+        } else {
+            popupTitle.innerText = "REACTION FAILED!";
+            popupTitle.className = "fail-title";
+            popupCardFrame.innerHTML = '';
+            
+            let failMsg = "The selected combination or current reactor temperature ";
+            failMsg += "do not react under the curriculum matrix rules.";
+            popupMessage.innerText = failMsg;
+            
+            reactionPopup.classList.remove('popup-hidden');
+        }
+    });
+    
+    btnPopupClose.addEventListener('click', () => {
+        reactionPopup.classList.add('popup-hidden');
+    });
+    
+    function clearBoard() {
+        removeCardFromSlot('slot-iron');
+        removeCardFromSlot('slot-agent');
+    }
+    btnClear.addEventListener('click', clearBoard);
+    
+    btnResetHand.addEventListener('click', () => {
+        clearBoard();
+        playerHand = ['fe', 'feo', 'fe3o4', 'fe2o3', 'o2', 'h2o', 's', 'h2', 'co', 'watergas'];
         currentAgentFilter = 'none';
         renderHand();
-        
-        reactionPopup.classList.remove('popup-hidden');
-    } else {
-        // 🌟 إظهار النافذة المنبثقة في حالة الفشل وإخفاء خانة الصورة
-        popupTitle.innerText = "REACTION FAILED!";
-        popupTitle.className = "fail-title";
-        popupCardFrame.innerHTML = ''; // لا توجد صورة ناتج في حالة الفشل
-        popupMessage.innerText = "The selected combination or current reactor temperature do not react under the curriculum matrix rules.";
-        
-        reactionPopup.classList.remove('popup-hidden');
-    }
-});
-
-// إغلاق النافذة العائمة عند تجميع المكافأة
-btnPopupClose.addEventListener('click', () => {
-    reactionPopup.classList.add('popup-hidden');
-});
-
-function clearBoard() {
-    removeCardFromSlot('slot-iron');
-    removeCardFromSlot('slot-agent');
-}
-btnClear.addEventListener('click', clearBoard);
-
-btnResetHand.addEventListener('click', () => {
-    clearBoard();
-    playerHand = ['fe', 'feo', 'fe3o4', 'fe2o3', 'o2', 'h2o', 's', 'h2', 'co', 'watergas'];
-    currentAgentFilter = 'none';
+    });
+    
+    tempRange.addEventListener('input', (e) => {
+        tempDisplay.innerText = e.target.value + '°C';
+    });
+    
+    // بدء رندرة اليد فوراً عند تحميل ملف الجافا سكريبت
     renderHand();
-});
-
-tempRange.addEventListener('input', (e) => {
-    tempDisplay.innerText = e.target.value + '°C';
-});
-
-// تشغيل اللعبة وتحديث كروت مخزن اللاعب فوراً عند التحميل
-renderHand();
-
+    

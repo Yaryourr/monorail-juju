@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider-Man Iron Station Chemistry Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Spidey-themed layout wrapper -->
+    <div class="game-container">
+        
+        <!-- Top Track Area: Ready for your Spiderman Route Banner -->
+        <header class="main-banner">
+            <div id="route-banner-container">
+                <img src="STart!.png" alt="Spidey Route Banner">
+                <div class="invisible-tracks">
+                    <div id="track-fe"></div>
+                    <div id="track-feo"></div>
+                    <div id="track-fe3o4"></div>
+                    <div id="track-fe2o3"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Reactor Board Center Grid -->
+        <main class="reactor-board">
+            <div class="slots-area">
+                
+                <!-- Slot 1: Iron Base Compound -->
+                <div class="drop-column">
+                    <span class="column-title">Base Compound</span>
+                    <div id="slot-iron" class="card-slot" data-slot-type="iron">
+                        <span class="slot-placeholder">Drop Station Card</span>
+                    </div>
+                </div>
+
+                <div class="plus-sign">+</div>
+
+                <!-- Slot 2: Chem Agent -->
+                <div class="drop-column">
+                    <span class="column-title">Reaction Agent</span>
+                    <div id="slot-agent" class="card-slot" data-slot-type="agent">
+                        <span class="slot-placeholder">Drop Agent Card</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Temperature slider positioned right below slots -->
+            <div class="temperature-control-box">
+                <div class="temp-info">
+                    <span class="temp-title">System Temperature</span>
+                    <span id="temp-display">450°C</span>
+                </div>
+                <input type="range" id="temp-range" min="200" max="800" value="450">
+            </div>
+
+            <!-- Styled 3D Action buttons -->
+            <div class="reactor-buttons">
+                <button id="btn-clear">Clear</button>
+                <button id="btn-combine">Initiate Reaction</button>
+            </div>
+            
+            <div id="terminal-log" style="display: none;"></div>
+        </main>
+
+        <!-- Card Deck Footer -->
+        <footer class="storage-footer">
+            
+            <!-- Filter Left: Oxidizing Agents -->
+            <div class="filter-side-box">
+                <button id="btn-toggle-oxidizers" class="game-btn filter-btn oxidizer-color">💥 Oxidizing Agents</button>
+                <span class="filter-hint">Filter 3 oxidizing options</span>
+            </div>
+
+            <!-- Center Deck Storage Space -->
+            <div class="center-deck-box">
+                <div class="deck-header">
+                    <span class="deck-title">🎒 Storage Hand Deck</span>
+                    <button id="btn-reset-inventory">Reset</button>
+                </div>
+                <div id="inventory-deck">
+                    <!-- Javascript populates cards here horizontally -->
+                </div>
+            </div>
+
+            <!-- Filter Right: Reducing Agents -->
+            <div class="filter-side-box">
+                <button id="btn-toggle-reducers" class="game-btn filter-btn reducer-color">❄️ Reducing Agents</button>
+                <span class="filter-hint">Filter reduction gas options</span>
+            </div>
+
+            <!-- نافذة النتيجة المنبثقة ثلاثية الأبعاد (Spidey Reaction Pop-up) -->
+    <div id="reaction-popup" class="popup-overlay popup-hidden">
+      <div class="popup-box">
+          <h2 id="popup-title">REACTION STATUS</h2>
+          <div class="popup-card-display">
+              <!-- مكان عرض صورة كارت البطل الناتج الجديد الممتد -->
+              <div id="popup-card-frame"></div>
+          </div>
+          <p id="popup-message">Formula computed successfully!</p>
+          <button id="btn-popup-close">Collect Reward</button>
+      </div>
+  </div>
+</footer>
+
+
+        <!-- SECTION 4: Game Credits Section (With Clickable External Anchors) -->
+        <div class="game-credits-box">
+          <!-- Clickable text credit -->
+          <p class="credits-main-text"> All rights reserved to Dr Joseph adel |
+
+            Developer: Yara Abukhuzima |
+
+            ادعولي اجيب 100% يخواتي ونفسي الدكتور يقبل الاد 
+          </p>
+          
+          <div class="credits-images-row">
+              <!-- Clickable Image Logo 1 -->
+              <a href="https://www.facebook.com/Dr.JosephAdel" target="_blank">
+                  <img src="logo.png" alt="JA Facebook" class="credit-logo-img">
+              </a>
+              
+              <!-- Clickable Image Logo 2 -->
+              <a href="https://www.instagram.com/_yaryouur" target="_blank">
+                  <img src="32.png" alt="Credit 2" class="credit-logo-img">
+              </a>
+            
+          </div>
+      </div>
+
+
+    <script src="game.js"></script>
+</body>
+</html>
+

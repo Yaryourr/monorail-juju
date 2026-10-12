@@ -1,0 +1,516 @@
+/* ==========================================================================
+   PURE CSS CHEMICAL CORE - SPIDERMAN LANDSCAPE THEME
+   ========================================================================== */
+
+/* Fullscreen centring reset with a dark web-blue radial space gradient */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, #0b1329 0%, #020617 100%);
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Horizontal game bounding wrapper box */
+.game-container {
+  width: 100%;
+  max-width: 1150px;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+}
+
+/* 1. Header Banner wrapper styled with a dark red neon glow */
+.main-banner {
+  background-color: #0b1329;
+  border: 1px solid #7f1d1d;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 0 20px rgba(153, 27, 27, 0.25);
+}
+#route-banner-container {
+  width: 100%;
+  aspect-ratio: 25 / 3;
+  background-color: #020617;
+  border-radius: 8px;
+  overflow: hidden;
+}
+#route-banner-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.invisible-tracks {
+  display: none;
+}
+
+/* 2. Main Lab Board Section */
+.reactor-board {
+  background-color: #0b1329;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-grow: 1;
+}
+.slots-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 700px;
+}
+.drop-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 42%;
+}
+.column-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 900;
+  color: #475569;
+  letter-spacing: 0.1em;
+}
+.card-slot {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: 2px dashed #3f6212; /* Clean deep border layout */
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(2, 6, 23, 0.6);
+  transition: all 0.2s ease;
+}
+.slot-placeholder {
+  color: #334155;
+  font-size: 12px;
+  text-align: center;
+}
+.plus-sign {
+  font-size: 32px;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+/* Glowing active target animation lines when dragging a valid card item */
+.slot-active {
+  border-color: #dc2626 !important;
+  background-color: rgba(220, 38, 38, 0.04) !important;
+  box-shadow: 0 0 15px rgba(220, 38, 38, 0.25) !important;
+}
+
+/* Temperature system controllers positioning styling blocks */
+.temperature-control-box {
+  width: 100%;
+  max-width: 500px;
+  border-top: 1px solid #1e293b;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.temp-info {
+  display: flex;
+  flex-direction: column;
+  min-w: 120px;
+}
+.temp-title {
+  font-size: 9px;
+  font-weight: 900;
+  color: #475569;
+  text-transform: uppercase;
+}
+#temp-display {
+  color: #06b6d4;
+  font-weight: bold;
+  font-size: 15px;
+  font-family: monospace;
+}
+input[type="range"] {
+  flex-grow: 1;
+  height: 6px;
+  background: #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* 3. Tactical 3D Gaming Button Core Design (Spiderman Deep Red Edition) */
+.reactor-buttons {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  max-width: 500px;
+}
+#btn-clear {
+  width: 35%;
+  padding: 12px 0;
+  background-color: #1e293b;
+  border: none;
+  border-bottom: 4px solid #0f172a;
+  color: #94a3b8;
+  font-weight: 900;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+#btn-clear:active {
+  border-bottom-width: 0px;
+  transform: translateY(4px);
+}
+#btn-combine {
+  width: 65%;
+  padding: 12px 0;
+  background: linear-gradient(to right, #dc2626, #991b1b);
+  border: none;
+  border-bottom: 4px solid #7f1d1d;
+  color: #ffffff;
+  font-weight: 900;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(153, 27, 27, 0.3);
+  transition: all 0.1s ease;
+}
+#btn-combine:hover {
+  filter: brightness(1.15);
+}
+#btn-combine:active {
+  border-bottom-width: 0px;
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+/* 4. Deck Storage Panel Space styling blocks */
+.storage-footer {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  background-color: #0b1329;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 12px;
+}
+.filter-side-box {
+  width: 23%;
+  background-color: rgba(2, 6, 23, 0.4);
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.filter-btn {
+  width: 100%;
+  padding: 12px 6px;
+  background-color: #1e293b;
+  border: none;
+  border-bottom: 3px solid #020617;
+  font-weight: 900;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.filter-btn:active {
+  border-bottom-width: 0px;
+  transform: translateY(3px);
+}
+.oxidizer-color { color: #34d399; }
+.reducer-color { color: #22d3ee; }
+
+.filter-hint {
+  font-size: 9px;
+  color: #475569;
+  margin-top: 6px;
+}
+
+.center-deck-box {
+  width: 54%;
+  background-color: rgba(2, 6, 23, 0.2);
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+.deck-title {
+  font-size: 10px;
+  font-weight: 900;
+  color: #475569;
+  text-transform: uppercase;
+}
+#btn-reset-inventory {
+  font-size: 9px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+#inventory-deck {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  min-height: 90px;
+}
+
+.card-dragging {
+  opacity: 0.25;
+  transform: scale(0.95);
+}
+/* إجبار الصورة على التمدد الكامل وتعبئة خانة الإسقاط */
+.reactor-slot-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.reactor-slot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* هذا الخيار يقوم بمط وتمديد الصورة لتطابق أبعاد الصندوق تماماً */
+  display: block;
+}
+
+/* تنسيق زر الحذف الطائر فوق الصورة الممتدة */
+.absolute-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  z-index: 10;
+}
+.absolute-remove-btn:hover {
+  background-color: #991b1b;
+}
+
+/* تأثيرات النافذة المنبثقة السينمائية */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(2, 6, 23, 0.85); /* تظليل الخلفية بالكامل */
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.popup-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.popup-box {
+  background-color: #0b1329;
+  border: 2px solid #dc2626;
+  border-radius: 20px;
+  padding: 24px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+  transform: scale(0.8);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.popup-overlay:not(.popup-hidden) .popup-box {
+  transform: scale(1); /* تأثير انثباق حركي عند الظهور */
+}
+
+#popup-title {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+}
+
+.success-title { color: #34d399; }
+.fail-title { color: #dc2626; }
+
+.popup-card-display {
+  width: 120px;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto 16px auto;
+  border-radius: 12px;
+  background-color: rgba(2, 6, 23, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#popup-card-frame {
+  width: 100%;
+  height: 100%;
+}
+
+#popup-card-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* تمدد ومط الصورة الناتج بالكامل */
+  border-radius: 12px;
+}
+
+#popup-message {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+/* زر إغلاق النافذة وجمع الجائزة المطور */
+#btn-popup-close {
+  width: 100%;
+  padding: 10px 0;
+  background: linear-gradient(to right, #dc2626, #991b1b);
+  border: none;
+  border-bottom: 3px solid #7f1d1d;
+  color: #ffffff;
+  font-weight: 900;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+#btn-popup-close:active {
+  border-bottom-width: 0px;
+  transform: translateY(3px);
+}
+/* Custom Bottom Credits Layout Rules */
+.game-credits-box {
+  width: 100%;
+  margin-top: 8px;
+  padding-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(30, 41, 59, 0.4);
+}
+
+.credits-main-text {
+  font-size: 9px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.credits-images-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.credit-logo-img {
+  height: 18px;
+  width: auto;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+  border-radius: 4px;
+}
+
+.credit-logo-img:hover {
+  opacity: 0.7; /* Lights up slightly on mouse hover */
+}
+/* Styling rules specifically for clickable link elements in the credits */
+.game-credits-box a {
+  color: #475569;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Red Spidey glow animation when hovering over text or image links */
+.game-credits-box a:hover {
+  color: #dc2626;
+}
+
+/* Optional: Slight opacity change on image wrapper anchors for a lifting effect */
+.game-credits-box a:hover .credit-logo-img {
+  opacity: 0.7;
+}
+/* 1. الحالة الافتراضية للكروت لضمان حركة سلسة (Smooth Transition) */
+#inventory-deck div {
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+  cursor: grab;
+  z-index: 1;
+}
+
+/* 2. تأثير الـ Hover السينمائي المضيء عند مرور الماوس */
+#inventory-deck div:hover {
+  transform: translateY(-10px) scale(1.12) rotate(1deg); /* يرتفع للأعلى ويكبر قليلاً مع التواء خفيف */
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.5), 0 0 15px rgba(220, 38, 38, 0.3); /* توهج أحمر نيون خارجي */
+  border-color: #dc2626 !important; /* تحويل لون الحدود للأحمر المضيء فوراً */
+  z-index: 10; /* جعل الكارت النشط يظهر فوق الكروت المجاورة له */
+}
+
+/* 3. تأثير خفيف عند الضغط المطول بالماوس للاستعداد للسحب */
+#inventory-deck div:active {
+  transform: scale(0.95);
+  cursor: grabbing;
+}
